@@ -1,9 +1,9 @@
 
 # Look at the charactercreator_character table
-GET_CHARACTERS = """
-SELECT *
-FROM charactercreator_character;
-"""
+# GET_CHARACTERS = """
+# SELECT *
+# FROM charactercreator_character;
+# """
 
 # How many total Characters are there? (302)
 TOTAL_CHARACTERS = """
@@ -12,14 +12,14 @@ FROM charactercreator_character;
 """
 
 # How many of each specific subclass?
-TOTAL_SUBCLASS = """
-SELECT
-	(SELECT COUNT(*) FROM charactercreator_necromancer) AS necros,
-	(SELECT COUNT(*) FROM charactercreator_mage) AS mages,
-	(SELECT COUNT(*) FROM charactercreator_thief) AS thiefs,
-	(SELECT COUNT(*) FROM charactercreator_cleric) AS clerics,
-	(SELECT COUNT(*) FROM charactercreator_fighter) AS fighters;
-"""
+# TOTAL_SUBCLASS = """
+# SELECT
+# 	(SELECT COUNT(*) FROM charactercreator_necromancer) AS necros,
+# 	(SELECT COUNT(*) FROM charactercreator_mage) AS mages,
+# 	(SELECT COUNT(*) FROM charactercreator_thief) AS thiefs,
+# 	(SELECT COUNT(*) FROM charactercreator_cleric) AS clerics,
+# 	(SELECT COUNT(*) FROM charactercreator_fighter) AS fighters;
+# """
 
 CLASS = "SELECT COUNT(*) FROM charactercreator_"
 
