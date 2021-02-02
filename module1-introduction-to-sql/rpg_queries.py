@@ -1,17 +1,5 @@
-import sqlite3
 from query import *
-
-class SQL_Interface:
-    def __init__(self, db_name="rpg_db.sqlite3"):
-        self.conn = sqlite3.connect(db_name)
-        self.curs = self.conn.cursor()
-
-    def query(self, query):
-        self.curs.execute(query)
-        return self.curs.fetchall()
-    
-    def query_value(self, query):
-        return self.query(query)[0][0]
+from sql_helper import SQL_Interface
 
 if __name__ == "__main__":
     rpg = SQL_Interface(db_name="rpg_db.sqlite3")
