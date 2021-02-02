@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/jrsla/Code/Lambda/Unit 3 - Software Engineering/DS-Unit-3-Sprint-2-SQL-and-Databases/module1-introduction-to-sql/rpg_db.sqlite3" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2711"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/><expanded_item id="4" parent="1"/></tab_structure><tab_browse><current_table name="4,26:maincharactercreator_character"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="armory_item" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="55"/><column index="2" value="206"/><column index="3" value="43"/><column index="4" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="charactercreator_character" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="91"/><column index="2" value="199"/><column index="3" value="40"/><column index="4" value="40"/><column index="5" value="40"/><column index="6" value="65"/><column index="7" value="81"/><column index="8" value="68"/><column index="9" value="56"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="charactercreator_character_inventory" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="91"/><column index="3" value="55"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="charactercreator_mage" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="119"/><column index="2" value="61"/><column index="3" value="43"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">-- What are the duplicate names?
+-- SELECT name
+-- FROM charactercreator_character
+-- GROUP BY name
+-- HAVING COUNT(*) &gt; 1;
+
+-- How much rage does each fighter have?
+-- SELECT character_id, name, rage
+-- FROM charactercreator_fighter as cf
+-- LEFT JOIN charactercreator_character as cc
+-- ON cf.character_ptr_id = cc.character_id;
+
+-- SELECT character_id, name
+-- FROM charactercreator_character
+-- WHERE character_id BETWEEN 50 AND 54;
+
+-- SELECT charactercreator_character.name, charactercreator_character_inventory.id
+-- FROM charactercreator_character_inventory
+-- INNER JOIN charactercreator_character
+-- ON charactercreator_character.character_id = charactercreator_character_inventory.character_id;
+
+-- List the character names and item names in each character's inventory
+-- SELECT character.name, item.name
+-- FROM charactercreator_character AS character, charactercreator_character_inventory AS inventory, armory_item AS item
+-- WHERE character.character_id = inventory.character_id
+--   AND inventory.item_id = item.item_id
+-- LIMIT 20
+
+-- How many total Characters are there?
+-- SELECT COUNT(*) as number_of_characters
+-- FROM charactercreator_character;
+
+-- Non weapons
+-- SELECT count(item_id) from armory_item  where item_id not in (select item_ptr_id from armory_weapon )
+
+-- How many total Items?
+-- SELECT COUNT(item_id) as items
+-- FROM armory_item
+
+-- How many of the Items are weapons?
+-- SELECT COUNT(item_ptr_id)
+-- FROM armory_weapon
+
+-- How many of the items are not weapons?
+-- SELECT COUNT(items.name)
+-- FROM armory_item as items
+-- WHERE items.item_id IN(
+-- SELECT armory_weapon.item_ptr_id
+-- FROM armory_weapon
+-- )
+
+-- How many Items does each character have? (Return first 20 rows)
+-- SELECT character.name as &quot;character name&quot;, COUNT(item.name) as &quot;# of items&quot;
+-- FROM charactercreator_character AS character, charactercreator_character_inventory AS inventory, armory_item AS item
+-- WHERE character.character_id = inventory.character_id
+--   AND inventory.item_id = item.item_id
+-- GROUP BY character.name
+-- ORDER BY character.name
+-- LIMIT 20
+
+-- Shortened version of the last one
+-- SELECT character.name as &quot;character_name&quot;, COUNT(inventory.id) as &quot;#_of_items&quot;
+-- FROM charactercreator_character AS character, charactercreator_character_inventory AS inventory
+-- WHERE character.character_id = inventory.character_id
+-- GROUP BY character.name
+-- ORDER BY character.name
+-- LIMIT 20
+
+-- How many Weapons does each character have? (Return first 20 rows)
+SELECT character.name as &quot;character_name&quot;, COUNT(weapon.item_ptr_id) as &quot;#_of_weapons&quot;
+FROM charactercreator_character AS character, charactercreator_character_inventory AS inventory, armory_weapon as weapon
+WHERE character.character_id = inventory.character_id AND inventory.item_id = weapon.item_ptr_id
+GROUP BY character.name
+ORDER BY character.name
+LIMIT 20
+
+-- How many Items and Weapons does each character have? (Return first 20 rows)
+-- SELECT
+-- 	character.name as &quot;character_name&quot;,
+-- 	(SELECT COUNT(inventory.id)
+-- 	FROM charactercreator_character AS character,
+-- 	charactercreator_character_inventory AS inventory
+-- 	WHERE character.character_id = inventory.character_id
+-- 	) as &quot;#_of_items&quot;,
+-- 	(SELECT COUNT(weapon.item_ptr_id)
+-- 	FROM 	charactercreator_character AS character,
+-- 	charactercreator_character_inventory AS inventory,
+-- 	armory_weapon as weapon
+-- 	WHERE character.character_id = inventory.character_id AND inventory.item_id = weapon.item_ptr_id
+-- 	) as &quot;#_of_weapons&quot;
+-- FROM
+-- 	charactercreator_character AS character,
+-- -- 	charactercreator_character_inventory AS inventory,
+-- -- 	armory_weapon as weapon
+-- -- WHERE character.character_id = inventory.character_id AND inventory.item_id = weapon.item_ptr_id
+-- GROUP BY character.name
+-- ORDER BY character.name
+-- LIMIT 20
+
+-- SELECT character.name as &quot;character_name&quot;, COUNT(weapon.item_ptr_id) as &quot;#_of_weapons&quot;
+-- FROM charactercreator_character AS character, charactercreator_character_inventory AS inventory, armory_weapon as weapon
+-- WHERE character.character_id = inventory.character_id AND inventory.item_id = weapon.item_ptr_id
+-- GROUP BY character.name
+-- ORDER BY character.name
+-- LIMIT 20
+
+-- On average, how many Items does each Character have?
+-- SELECT
+-- 	AVG(&quot;#_of_items&quot;) as &quot;avg_#_of_items&quot;
+-- FROM
+-- (
+-- 	SELECT
+-- 		COUNT(inventory.id) AS &quot;#_of_items&quot;
+-- 	FROM
+-- 		charactercreator_character AS character,
+-- 		charactercreator_character_inventory AS inventory
+-- 		WHERE
+-- 			character.character_id = inventory.character_id
+-- 		GROUP BY character.name
+-- )
+
+-- On average, how many Weapons does each character have?
+-- SELECT
+-- 	AVG(&quot;#_of_weapons&quot;) as &quot;avg_#_of_weapons&quot;
+-- FROM
+-- (
+-- 	SELECT
+-- 		COUNT(weapon.item_ptr_id) as &quot;#_of_weapons&quot;
+-- 	FROM
+-- 		charactercreator_character AS character,
+-- 		charactercreator_character_inventory AS inventory,
+-- 		armory_weapon as weapon
+-- 		WHERE
+-- 			character.character_id = inventory.character_id
+-- 			AND inventory.item_id = weapon.item_ptr_id
+-- 		GROUP BY character.name
+-- )
+
+-- How many of each specific subclass?
+-- SELECT characters.name, characters.class
+-- FROM charactercreator_character AS characters, charactercreator_fighter AS fighters
+-- WHERE characters.character_id = fighters.character_ptr_id
+-- INSERT INTO characters (class)
+-- VALUES (&quot;Fighter&quot;);
+
+-- CREATE TEMP TABLE IF NOT EXISTS My_Table (
+-- 	class TEXT PRIMARY KEY,
+-- 	num INTEGER
+-- ) AS
+ 
+-- SELECT COUNT() AS &quot;#_of_characters&quot;
+-- FROM charactercreator_necromancer
+-- 
+-- SELECT COUNT(*) AS &quot;#_of_characters&quot;
+-- FROM charactercreator_mage
+-- 
+-- SELECT COUNT(*) AS &quot;#_of_characters&quot;
+-- FROM charactercreator_thief
+-- 
+-- SELECT COUNT(*) AS &quot;#_of_characters&quot;
+-- FROM charactercreator_cleric
+-- 
+-- SELECT COUNT(*) AS &quot;#_of_characters&quot;
+-- FROM charactercreator_fighter
+
+-- SELECT
+-- 	(SELECT COUNT(*) FROM charactercreator_necromancer) AS necros,
+-- 	(SELECT COUNT(*) FROM charactercreator_mage) AS mages,
+-- 	(SELECT COUNT(*) FROM charactercreator_thief) AS thiefs,
+-- 	(SELECT COUNT(*) FROM charactercreator_cleric) AS clerics,
+-- 	(SELECT COUNT(*) FROM charactercreator_fighter) AS fighters;
+
+-- SELECT COUNT(*) FROM charactercreator_necromancer</sql><current_tab id="0"/></tab_sql></sqlb_project>
