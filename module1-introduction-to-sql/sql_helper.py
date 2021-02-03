@@ -1,7 +1,7 @@
 import sqlite3
 
 class SQL_Interface:
-    def __init__(self, db_name="rpg_db.sqlite3"):
+    def __init__(self, db_name):
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
 

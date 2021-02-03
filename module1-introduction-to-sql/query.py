@@ -81,22 +81,21 @@ FROM
 );
 """
 
-# On average, how many Weapons does each character have? (1.32)
+# On average, how many Weapons does each character have? (0.67)
 AVG_CHARACTER_WEAPONS = """
 SELECT
-	AVG("#_of_weapons") as "avg_#_of_weapons"
-FROM
-(
+	AVG(weapon_count) as avg_weapons_per_char
+FROM (
 	SELECT
-		COUNT(weapon.item_ptr_id) as "#_of_weapons"
+		character.character_id,
+		COUNT(DISTINCT weapon.item_ptr_id) as weapon_count
 	FROM
-		charactercreator_character AS character,
-		charactercreator_character_inventory AS inventory,
-		armory_weapon as weapon
-		WHERE
-			character.character_id = inventory.character_id
-			AND inventory.item_id = weapon.item_ptr_id
-		GROUP BY character.name
-);
+		charactercreator_character AS character
+		LEFT JOIN charactercreator_character_inventory inventory  -- characters may have zero items
+			ON character.character_id = inventory.character_id
+		LEFT JOIN armory_weapon weapon  -- many items are not weapons, so only retain weapons
+			ON inventory.item_id = weapon.item_ptr_id
+		GROUP BY character.character_id
+) subq;
 """
 

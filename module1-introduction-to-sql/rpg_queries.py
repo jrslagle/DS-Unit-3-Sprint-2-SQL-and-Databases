@@ -2,7 +2,7 @@ from query import *
 from sql_helper import SQL_Interface
 
 if __name__ == "__main__":
-    rpg = SQL_Interface(db_name="rpg_db.sqlite3")
+    rpg = SQL_Interface(db_name="module1-introduction-to-sql\\rpg_db.sqlite3")
     
     print("In the RPG Data:")
     print(f"There are {rpg.query_value(TOTAL_CHARACTERS)} total characters which have chosen these classes:")
