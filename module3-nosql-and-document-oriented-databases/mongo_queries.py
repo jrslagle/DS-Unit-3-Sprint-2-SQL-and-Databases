@@ -11,7 +11,7 @@ def create_mongodb_connection():
     CLUSTER_NAME = os.getenv("MONGO_CLUSTER_NAME", default="OOPS")
     DB_NAME = os.getenv("MONGO_DB", default="OOPS")
 
-    # client = pymongo.MongoClient("mongodb+srv://jrslagle:<password>@cluster0.ticlc.mongodb.net/<dbname>?retryWrites=true&w=majority")
+    # client = pymongo.MongoClient("mongodb+srv://jrslagle:<password>@cluster0.ticlc.mongodb.net/<dbname>?retryWrites=true&w=majority")  # example that Mongo provides
     mongo_client = pymongo.MongoClient(f"mongodb+srv://{DB_USER}:{DB_PASSWORD}@{CLUSTER_NAME}.ticlc.mongodb.net/{DB_NAME}?retryWrites=true&w=majority") # &ssl=true") # &ssl_cert_reqs=CERT_NONE")
     return mongo_client
 
@@ -73,87 +73,10 @@ def make_character_document(rpg_cursor, character_id):
         "items": items,
         "weapons": weapons,
     }
-
     return character_document
 
-def upload_documents(database, documents):
-    database.test2.insert_many(documents)
-
-    # get the CREATE query for all the columns
-    # rpg_cursor.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name=?;", (table,))
-    # create = rpg_cursor.fetchone()[0]
-    # create = create.replace(' AUTOINCREMENT','')  # autoincrement is implied and throws a syntax error
-    # create = create.replace(' datetime',' timestamp')
-    # print(create)
-    
-    # get the data in the rows
-    # rpg_cursor.execute("SELECT * FROM %s;" %table)
-    # rows = rpg_cursor.fetchall()
-
-    # if len(rows) > 0:
-    #     column_count = len(rows[0])
-    #     place_holder = '%s,'*column_count
-    #     new_holder = place_holder[:-1]
-    # else:
-    #     column_count = 0
-    #     place_holder = ''
-    #     new_holder = '%s,'
-    # print(f"{table} has {column_count} columns")
-    # try:
-        
-
-    #     db.test.insert_one(character_document)
-
-
-    #     elephant_cursor = elephant_connection.cursor()
-    #     elephant_cursor.execute("DROP TABLE IF EXISTS %s;" %table)
-    #     elephant_cursor.execute(create)
-
-    #     # new_holder = '%s,'
-    #     elephant_cursor.executemany("INSERT INTO %s VALUES (%s);" % (table, new_holder), rows)
-    #     elephant_connection.commit()
-    #     print(f"Created {table}")
-    # except psycopg2.DatabaseError as e:
-    #     print("Error", e)
-    #     sys.exit(1)
-
-# db.test.insert_one({'x': 1})
-
-# print(db.test.count_documents({'x': 1}))
-
-# print(list(db.test.find({'x': 1})))
-
-# nick = {
-#     'food': 'Mexican',
-#     'color': 'Yellow',
-#     'city': ['New York', 'Amsterdam']
-# }
-# nate = {
-#     'food': 'Italian',
-#     'color': 'Blue',
-#     'number': 212
-# }
-# all_docs = [nick, nate]
-# db.test.insert_many(all_docs)
-
-# print(list(db.test.find()))
-# print(list(db.test.find({'color':"Blue"})))
-
-# collection = db.pokemon_test  # whatever
-# print("------------")
-# print("COLLECTION:", type(collection), collection)
-
-# collection.insert_one({
-#     'name':'Pikachu',
-#     'level': 30,
-#     'exp': 76000000000,
-#     'hp': 400
-# })
-# print("DOCS:", collection.count_documents({}))
-# print(collection.count_documents({}))
-# pprint(dir(collection))
-
 if __name__ == "__main__":
+    # Create character sheets from RGB SQLite data
     rpg_connection = sqlite3.connect("module1-introduction-to-sql\\rpg_db.sqlite3")
     rpg_cursor = rpg_connection.cursor()
     character_ids = get_character_ids(cursor=rpg_cursor)
@@ -161,8 +84,9 @@ if __name__ == "__main__":
     print(f"Created {len(character_documents)} character documents")
     rpg_connection.close()
 
+    # Upload character sheets to a MongoDB Atlas instance
     mongo_client = create_mongodb_connection()
-    db = mongo_client.test2
-    # upload_documents(db, character_documents)
-    doc_count = db.test2.count_documents()
-    print(f"Counted {doc_count} records on your MongoDB cluster")
+    db = mongo_client.rgb_characters
+    db.rgb_characters.insert_many(character_documents)
+    doc_count = db.rgb_characters.count_documents({})
+    print(f"Counted {doc_count} documents on your MongoDB cluster")
